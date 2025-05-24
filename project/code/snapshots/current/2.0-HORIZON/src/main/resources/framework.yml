@@ -1,0 +1,42 @@
+# CoreFramework Internal Configuration
+# This file is bundled with the plugin and not meant to be edited by users
+
+# Framework Information
+framework:
+  name: 'CoreFramework'
+  version: '2.0-HORIZON'
+  author: 'RhythmKnights'
+
+# CoreAPI Information
+coreapi:
+  version: '2.0-HORIZON'
+  minimum_compatible: '1.0'
+  
+# Version Checking (for future use)
+version_checking:
+  enabled: true
+  github_owner: 'rhythmknights'
+  check_interval: 3600
+
+# Prefix Configuration
+prefix:
+  enabled: true
+
+# Header Configuration
+header:
+  enabled: true
+  lines: 7  # Number of header lines to display (1-8)
+
+# Formatting Configuration
+formatting:
+  line_length: 88  # Total character length for strikethrough lines (default: 60)
+  min_padding: 2   # Minimum padding spaces (default: 2)
+
+# Plugin Detection
+detection:
+  core_plugins:
+    - 'CoreCommands'
+    - 'CoreExceed'
+    - 'CoreFlags'
+    - 'CoreTags'
+    - 'CoreWidgets'

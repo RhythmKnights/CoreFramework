@@ -1,0 +1,6 @@
+io.rhythmknights.coreframework
+io.rhythmknights.coreframework.component.api
+io.rhythmknights.coreframework.component.api.hook
+io.rhythmknights.coreframework.component.api.plugin
+io.rhythmknights.coreframework.component.core
+io.rhythmknights.coreframework.component.utility
