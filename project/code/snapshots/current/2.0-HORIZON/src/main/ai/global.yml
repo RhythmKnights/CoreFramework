@@ -1,0 +1,50 @@
+# CoreFramework Language Configuration - Global
+# Contains all user-facing text strings
+
+# Prefix
+prefix: '<dark_grey>[</dark_grey><blue>CoreFramework</blue><dark_grey>]</dark_grey>'
+
+# Startup Messages
+startup:
+  header_line1: '<blue><bold><st>+</st>{scaled.separator}<st>+</st></bold></blue>'
+  header_line2: '<blue>|</blue><dark_grey><bold>   _____ _____ _____ _____    _____ _____ _____ _____ _____ _ _ _ _____ _____ __ __   </bold></dark_grey><blue>|</blue>'
+  header_line3: '<blue>|</blue><dark_grey><bold>  |     |     | __  |   __|  |   __| __  |  _  |     |   __| | | |     | __  |  |  |  </bold></dark_grey><blue>|</blue>'
+  header_line4: '<blue>|</blue><dark_grey><bold>  |   --|  |  |    <|   __|  |   __|    <|     | | | |   __| | | |  |  |    <|    <   </bold></dark_grey><blue>|</blue>'
+  header_line5: '<blue>|</blue><dark_grey><bold>  |_____|_____|__|__|_____|  |__|  |__|__|__|__|_|_|_|_____|_____|_____|__|__|__|__|  </bold></dark_grey><blue>|</blue>'
+  header_line6: '<blue>|</blue>                                                                                      <blue>|</blue>'
+  header_line7: '<blue><bold><st>+</st>{scaled.separator}<st>+</st></bold></blue>'
+  header_line8: ''
+  initialization_start: '<blue>|</blue> <dark_grey><st>  </st></dark_grey> <grey><bold>Initialization</bold></grey> <dark_grey>{scaled.separator} +</dark_grey>'
+  detecting_api: '<blue>|</blue> <grey>Detecting API...</grey>'
+  api_found: '<blue>|</blue> <yellow>CoreAPI</yellow> <dark_grey>{scaled.separator}</dark_grey> <green>v({version})</green> <dark_grey>[</dark_grey><yellow>CURRENT</yellow><dark_grey>] </dark_grey>'
+  detecting_plugins: '<blue>|</blue> <grey>Detecting plugins...</grey>'
+  plugin_detected: '<blue>|</blue> <yellow>{plugin}</yellow> <dark_grey>{scaled.separator}</dark_grey> <green>v({version})</green> <dark_grey>[</dark_grey><yellow>CURRENT</yellow><dark_grey>] </dark_grey>'
+  plugin_outdated: '<blue>|</blue> <yellow>{plugin}</yellow> <dark_grey>{scaled.separator}</dark_grey> <gold>v({version})</gold> <dark_grey>[</dark_grey><red>UPDATE AVAILABLE</red><dark_grey>] </dark_grey>'
+  separator: '<blue><bold><st>+</st>{scaled.separator}<st>+</st></bold></blue>'
+
+# Plugin Hook Messages
+plugin_hooks:
+  header: '<blue>|</blue> <dark_grey>[</dark_grey><yellow>{plugin}</yellow><dark_grey>]</dark_grey> <grey>version {version}</grey> <dark_grey>[</dark_grey><blue>{codename}</blue><dark_grey>]</dark_grey>'
+  hooks_header: '<blue>|</blue> <dark_grey><st>  </st></dark_grey> <grey><bold>Hooks</bold></grey> <dark_grey>{scaled.separator} +</dark_grey>'
+  required_header: '<blue>|</blue> <dark_grey>[</dark_grey><red>REQUIRED</red><dark_grey>]</dark_grey>'
+  optional_header: '<blue>|</blue> <dark_grey>[</dark_grey><gold>OPTIONAL</gold><dark_grey>]</dark_grey>'
+  hook_success: '<blue>|</blue> <grey>{plugin}</grey> <dark_grey>{scaled.separator}</dark_grey> <dark_grey>[</dark_grey><green>HOOKED</green><dark_grey>] </dark_grey>'
+  hook_failed: '<blue>|</blue> <grey>{plugin}</grey> <dark_grey>{scaled.separator}</dark_grey> <dark_grey>[</dark_grey><red>FAILED</red><dark_grey>] </dark_grey>'
+
+# Activation Messages
+activation:
+  header: '<blue>|</blue> <dark_grey><st>  </st></dark_grey> <grey><bold>Activation</bold></grey> <dark_grey>{scaled.separator} +</dark_grey>'
+  success: '<blue>|</blue> <grey>Successfully initialized and activated the following plugins:</grey>'
+  plugin_list: '<blue>|</blue> <dark_grey>[</dark_grey><gold>{plugins}</gold><dark_grey>]</dark_grey>'
+  failed: '<blue>|</blue> <red>Failed to initialize the following plugins:</red>'
+  failed_plugin_list: '<blue>|</blue> <dark_grey>[</dark_grey><red>{plugins}</red><dark_grey>]</dark_grey>'
+
+# Shutdown Messages
+shutdown:
+  message: '{prefix} <grey>Framework and all registered plugins have been disabled.</grey>'
+
+# General Messages (for future use)
+general:
+  reload_success: '{prefix} <green>CoreFramework has been reloaded successfully.</green>'
+  reload_failed: '{prefix} <red>Failed to reload CoreFramework.</red>'
+  plugin_registered: '{prefix} <grey>Plugin</grey> <gold>{plugin}</gold> <grey>has been registered.</grey>'

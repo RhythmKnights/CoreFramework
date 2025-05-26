@@ -28,20 +28,20 @@ repositories {
 dependencies {
     // Bukkit API
     compileOnly 'org.spigotmc:spigot-api:1.21.5-R0.1-SNAPSHOT'
-    
+
     // Adventure API - BUNDLED AND RELOCATED
     implementation 'net.kyori:adventure-api:4.21.0'
     implementation 'net.kyori:adventure-text-minimessage:4.21.0'
     implementation 'net.kyori:adventure-platform-bukkit:4.4.0'
     implementation 'net.kyori:adventure-text-serializer-gson:4.21.0'
     implementation 'net.kyori:adventure-text-serializer-legacy:4.21.0'
-    
-    // CoreAPI - BUNDLED
-    implementation name: 'CoreAPI-2.0-HORIZON', version: ''
-    
+
+    // CoreAPI - BUNDLED (changed from compileOnly to implementation)
+    implementation files('libs/CoreAPI-2.0-HORIZON.jar')
+
     // Annotations
     compileOnly 'org.jetbrains:annotations:24.0.0'
-    
+
     // Testing dependencies
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
@@ -62,21 +62,34 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ['-parameters']
 }
 
+// Configure Gradle's default 'javadoc' task
 javadoc {
-    // Set the destination directory for the generated Javadoc
+    source = sourceSets.main.allJava
+    classpath = sourceSets.main.compileClasspath
     destinationDir = file("${buildDir}/docs/javadoc")
     options.encoding = 'UTF-8'
     options.addStringOption('Xdoclint:none', '-quiet')
     title = "CoreFramework ${project.version}"
+
+    // Error Logging for 'javadoc' task
+    doLast {
+        if (it.state.failure) {
+            ant.mkdir(dir: "${buildDir}/logs")
+            ant.echo(file: "${buildDir}/logs/error.javadoc.log", append: false, message: it.state.failure.exception.message)
+        }
+    }
 }
 
-
+// Configure 'shadowJar' task
 shadowJar {
-    archiveClassifier.set('')
-    
-    // Relocate Adventure API to avoid conflicts
-    //relocate 'net.kyori.adventure', 'io.rhythmknights.coreframework.libs.adventure'
-    
+    archiveClassifier.set('') // Ensures the JAR doesn't get a classifier like '-shadow'
+    // Explicitly set the destination and file name
+    destinationDirectory = file("${buildDir}/libs")
+    archiveFileName = "${project.name}-${version}.jar" // This will be the name of the shadowed JAR
+
+    // Relocate Adventure API to avoid conflicts with server/other plugins
+    relocate 'net.kyori.adventure', 'io.rhythmknights.coreframework.libs.adventure'
+
     manifest {
         attributes(
             'Implementation-Title': 'CoreFramework',
@@ -84,21 +97,28 @@ shadowJar {
             'Built-By': System.properties['user.name']
         )
     }
-    
-    // Exclude unwanted files
+
+    // Exclude unwanted files from the shadow JAR
     exclude 'META-INF/maven/**'
     exclude 'META-INF/versions/**'
     exclude 'META-INF/versions.list'
     exclude 'META-INF/*.SF'
     exclude 'META-INF/*.DSA'
     exclude 'META-INF/*.RSA'
-    
-    // Don't minimize - we want all Adventure API classes
-    // minimize()
+
+    // Error Logging for 'shadowJar' task
+    doLast {
+        if (it.state.failure) {
+            ant.mkdir(dir: "${buildDir}/logs")
+            ant.echo(file: "${buildDir}/logs/error.jar.log", append: false, message: it.state.failure.exception.message)
+        }
+    }
 }
 
-build {
-    dependsOn shadowJar
+// Register the 'fullbuild' task to depend on javadoc and shadowJar tasks
+tasks.register('fullbuild') {
+    dependsOn tasks.javadoc
+    dependsOn tasks.shadowJar
 }
 
 test {

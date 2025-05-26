@@ -14,7 +14,6 @@ import org.bukkit.plugin.Plugin;
 /**
  * Single Source of Truth for all message formatting and sending across RhythmKnights plugins
  * Handles both legacy and Adventure API formatting with proper defaults (white, non-italic)
- * Supports mixed formatting (legacy and MiniMessage in the same string)
  */
 public class TextUtility {
 
@@ -62,7 +61,7 @@ public class TextUtility {
 
     /**
      * Parse a message to a Component with proper defaults (white, non-italic).
-     * Supports both legacy (&) and MiniMessage formats with hex colors, including mixed formats.
+     * Supports both legacy (&) and MiniMessage formats with hex colors.
      *
      * @param message The message to parse
      * @return The parsed Component with proper defaults
@@ -75,56 +74,25 @@ public class TextUtility {
         Component result;
         
         try {
-            // Always process legacy codes first, since MiniMessage can handle the output
-            // This allows for mixed formatting like: "&cHello <bold>world</bold> &#FF0000"
+            // Check if the message contains MiniMessage tags
+            if (containsMiniMessageTags(message)) {
+                // Parse with MiniMessage first
+                result = miniMessage.deserialize(message);
+            } else if (containsLegacyCodes(message)) {
+                // Parse with legacy serializer
+                result = legacySerializer.deserialize(message);
+            } else {
+                // Plain text - create basic component
+                result = Component.text(message);
+            }
             
-            // Step 1: Convert legacy codes (including hex) to a format MiniMessage can understand
-            String processedMessage = message;
-            
-            // Handle legacy hex codes (&#RRGGBB) first
-            processedMessage = processedMessage.replaceAll("&#([0-9A-Fa-f]{6})", "<#$1>");
-            
-            // Handle standard legacy codes (&a, &l, etc.) by converting to MiniMessage equivalents
-            processedMessage = processedMessage
-                .replace("&0", "<black>")
-                .replace("&1", "<dark_blue>")
-                .replace("&2", "<dark_green>")
-                .replace("&3", "<dark_aqua>")
-                .replace("&4", "<dark_red>")
-                .replace("&5", "<dark_purple>")
-                .replace("&6", "<gold>")
-                .replace("&7", "<gray>")
-                .replace("&8", "<dark_gray>")
-                .replace("&9", "<blue>")
-                .replace("&a", "<green>")
-                .replace("&b", "<aqua>")
-                .replace("&c", "<red>")
-                .replace("&d", "<light_purple>")
-                .replace("&e", "<yellow>")
-                .replace("&f", "<white>")
-                .replace("&k", "<obfuscated>")
-                .replace("&l", "<bold>")
-                .replace("&m", "<strikethrough>")
-                .replace("&n", "<underlined>")
-                .replace("&o", "<italic>")
-                .replace("&r", "<reset>");
-            
-            // Step 2: Parse with MiniMessage (which now handles everything)
-            result = miniMessage.deserialize(processedMessage);
-            
-            // Step 3: Apply default formatting
+            // Apply default formatting: white color and explicitly non-italic
             result = applyDefaults(result);
             
         } catch (Exception e) {
-            // If MiniMessage fails, fall back to legacy-only parsing
-            try {
-                result = legacySerializer.deserialize(message);
-                result = applyDefaults(result);
-            } catch (Exception legacyException) {
-                // Ultimate fallback to basic component with defaults
-                result = Component.text(message);
-                result = applyDefaults(result);
-            }
+            // Fallback to basic component with defaults
+            result = Component.text(message);
+            result = applyDefaults(result);
         }
 
         return result;
@@ -157,7 +125,7 @@ public class TextUtility {
      */
     private static boolean containsMiniMessageTags(String message) {
         return message.contains("<") && message.contains(">") && 
-               (message.contains("</") || message.matches(".*<[a-zA-Z_#][a-zA-Z0-9_#]*>.*"));
+               (message.contains("</") || message.matches(".*<[a-zA-Z_][a-zA-Z0-9_]*>.*"));
     }
 
     /**
@@ -166,22 +134,7 @@ public class TextUtility {
      * @return True if legacy codes are detected
      */
     private static boolean containsLegacyCodes(String message) {
-        // Check for standard legacy codes (&a, &f, etc.)
-        boolean hasStandardLegacy = message.contains("&") || message.contains("§");
-        
-        // Check for hex color codes (&#RRGGBB format)
-        boolean hasHexLegacy = message.matches(".*&#[0-9A-Fa-f]{6}.*");
-        
-        return hasStandardLegacy || hasHexLegacy;
-    }
-
-    /**
-     * Check if a message contains mixed formatting (both legacy and MiniMessage)
-     * @param message The message to check
-     * @return True if mixed formatting is detected
-     */
-    private static boolean containsMixedFormatting(String message) {
-        return containsLegacyCodes(message) && containsMiniMessageTags(message);
+        return message.contains("&") || message.contains("§");
     }
 
     /**
@@ -371,12 +324,12 @@ public class TextUtility {
                 framework.getServer().getPluginManager().disablePlugin(framework);
 
                 // Return a safe fallback
-                return message.replace(SCALED_SEPARATOR_MARKER, "<strikethrough>" + PADDING_CHAR.repeat(minPadding) + "</strikethrough>");
+                return message.replace(SCALED_SEPARATOR_MARKER, "<st>" + PADDING_CHAR.repeat(minPadding) + "</st>");
             }
         }
 
-        // Create the separator with the calculated padding using MiniMessage format
-        String dynamicPadding = "<strikethrough>" + PADDING_CHAR.repeat(neededPadding) + "</strikethrough>";
+        // Create the separator with the calculated padding
+        String dynamicPadding = "<st>" + PADDING_CHAR.repeat(neededPadding) + "</st>";
         return message.replace(SCALED_SEPARATOR_MARKER, dynamicPadding);
     }
 
@@ -418,9 +371,6 @@ public class TextUtility {
         // Then strip legacy color codes
         String strippedLegacy = strippedMiniMessage.replaceAll("(?i)&[0-9a-fklmnor]", "");
         strippedLegacy = strippedLegacy.replaceAll("§[0-9a-fklmnor]", ""); // Also strip section symbol
-        
-        // Strip hex codes
-        strippedLegacy = strippedLegacy.replaceAll("&#[0-9A-Fa-f]{6}", "");
 
         return strippedLegacy;
     }
